@@ -60,6 +60,8 @@ try:
 except ImportError:
     pass
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
 from _openai_compat import Anthropic
 from dotenv import load_dotenv
 
