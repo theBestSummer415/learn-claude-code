@@ -23,10 +23,11 @@ until the model decides to stop. Production agents layer
 policy, hooks, and lifecycle controls on top.
 
 Usage:
-    pip install anthropic python-dotenv
-    ANTHROPIC_API_KEY=... python s01_agent_loop/code.py
+    pip install openai python-dotenv
+    OPENAI_API_KEY=... OPENAI_BASE_URL=... python s01_agent_loop/code.py
 """
 
+import json
 import os
 import subprocess
 
@@ -40,27 +41,30 @@ try:
 except ImportError:
     pass
 
-from anthropic import Anthropic
+from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-if os.getenv("ANTHROPIC_BASE_URL"):
-    os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
-
-client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
+client = OpenAI(
+    api_key=os.environ["OPENAI_API_KEY"],
+    base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+)
 MODEL = os.environ["MODEL_ID"]
 
 SYSTEM = f"You are a coding agent at {os.getcwd()}. Use bash to solve tasks. Act, don't explain."
 
 # ── Tool definition: just bash ────────────────────────────
 TOOLS = [{
-    "name": "bash",
-    "description": "Run a shell command.",
-    "input_schema": {
-        "type": "object",
-        "properties": {"command": {"type": "string"}},
-        "required": ["command"],
+    "type": "function",
+    "function": {
+        "name": "bash",
+        "description": "Run a shell command.",
+        "parameters": {
+            "type": "object",
+            "properties": {"command": {"type": "string"}},
+            "required": ["command"],
+        },
     },
 }]
 
@@ -84,33 +88,46 @@ def run_bash(command: str) -> str:
 # ── The core pattern: a while loop that calls tools until the model stops ──
 def agent_loop(messages: list):
     while True:
-        response = client.messages.create(
-            model=MODEL, system=SYSTEM, messages=messages,
-            tools=TOOLS, max_tokens=8000,
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[{"role": "system", "content": SYSTEM}] + messages,
+            tools=TOOLS,
+            max_tokens=8000,
         )
 
-        # Append assistant turn
-        messages.append({"role": "assistant", "content": response.content})
+        msg = response.choices[0].message
+
+        # Append assistant turn (serialise to plain dict for re-sending)
+        assistant_entry = {"role": "assistant", "content": msg.content}
+        if msg.tool_calls:
+            assistant_entry["tool_calls"] = [
+                {
+                    "id": tc.id,
+                    "type": "function",
+                    "function": {"name": tc.function.name, "arguments": tc.function.arguments},
+                }
+                for tc in msg.tool_calls
+            ]
+        messages.append(assistant_entry)
 
         # If the model didn't call a tool, we're done
-        if response.stop_reason != "tool_use":
+        if response.choices[0].finish_reason != "tool_calls":
             return
 
         # Execute each tool call, collect results
-        results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                print(f"\033[33m$ {block.input['command']}\033[0m")
-                output = run_bash(block.input["command"])
-                print(output[:200])
-                results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": output,
-                })
+        for tc in msg.tool_calls:
+            args = json.loads(tc.function.arguments)
+            command = args["command"]
+            print(f"\033[33m$ {command}\033[0m")
+            output = run_bash(command)
+            print(output[:200])
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": output,
+            })
 
-        # Feed tool results back, loop continues
-        messages.append({"role": "user", "content": results})
+        # (loop continues — tool results are already appended above)
 
 
 # ── Entry point ──────────────────────────────────────────
@@ -129,9 +146,7 @@ if __name__ == "__main__":
         history.append({"role": "user", "content": query})
         agent_loop(history)
         # Print the model's final text response
-        response_content = history[-1]["content"]
-        if isinstance(response_content, list):
-            for block in response_content:
-                if getattr(block, "type", None) == "text":
-                    print(block.text)
+        last = history[-1]
+        if last["role"] == "assistant" and last.get("content"):
+            print(last["content"])
         print()

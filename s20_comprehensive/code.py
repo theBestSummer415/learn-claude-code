@@ -23,15 +23,13 @@ try:
 except ImportError:
     READLINE_AVAILABLE = False
 
-from anthropic import Anthropic
+from _openai_compat import Anthropic
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
-if os.getenv("ANTHROPIC_BASE_URL"):
-    os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
 
 WORKDIR = Path.cwd()
-client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
+client = Anthropic(api_key=os.environ["OPENAI_API_KEY"], base_url=os.getenv("OPENAI_BASE_URL"))
 MODEL = os.environ["MODEL_ID"]
 PRIMARY_MODEL = MODEL
 FALLBACK_MODEL = os.getenv("FALLBACK_MODEL_ID")

@@ -37,15 +37,13 @@ try:
 except ImportError:
     pass
 
-from anthropic import Anthropic
+from _openai_compat import Anthropic
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
-if os.getenv("ANTHROPIC_BASE_URL"):
-    os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
 
 WORKDIR = Path.cwd()
-client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
+client = Anthropic(api_key=os.environ["OPENAI_API_KEY"], base_url=os.getenv("OPENAI_BASE_URL"))
 MODEL = os.environ["MODEL_ID"]
 
 # ── Task System (from s12 + s18 worktree field) ──
