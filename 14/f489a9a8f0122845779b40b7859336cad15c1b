@@ -1,0 +1,52 @@
+s13_agent_teams/code.py
+  s_c28062538daa65::t_a61f843a7d954d 6
+  s_c28062538daa65::t_e7b5ad44243864 44-46,51-54
+s11_background_tasks/code.py
+  s_c28062538daa65::t_13a8227e6e2c4b 34-36,41-44
+s08_context_compact/code.py
+  s_c28062538daa65::t_8ec7949a1f8da4 65-68
+s06_subagent/code.py
+  s_c28062538daa65::t_8ec7949a1f8da4 43-46
+s07_skill_loading/code.py
+  s_c28062538daa65::t_8ec7949a1f8da4 47-50
+s09_memory/code.py
+  s_c28062538daa65::t_13a8227e6e2c4b 19-22,39-42
+s05_todo_write/code.py
+  s_c28062538daa65::t_8ec7949a1f8da4 46-49
+.env.example
+  s_c28062538daa65::t_8ec7949a1f8da4 1-3,8-9
+s15_integrated_harness/code.py
+  s_c28062538daa65::t_3e69de1f65917e 47-49,54-57
+  s_c28062538daa65::t_a61f843a7d954d 6
+s10_task_system/code.py
+  s_c28062538daa65::t_13a8227e6e2c4b 43-45,50-53
+requirements.txt
+  s_c28062538daa65::t_8ec7949a1f8da4 2,4
+s03_permission/code.py
+  s_c28062538daa65::t_a61f843a7d954d 31,56-59
+s12_cron_scheduler/code.py
+  s_c28062538daa65::t_e7b5ad44243864 37-39,45-48
+s14_mcp_plugin/code.py
+  s_c28062538daa65::t_e7b5ad44243864 37-39,44-47
+  s_c28062538daa65::t_a61f843a7d954d 6
+s17_goal_loop/code.py
+  s_c28062538daa65::t_3e69de1f65917e 826-828,839-842
+s04_hooks/code.py
+  s_c28062538daa65::t_a61f843a7d954d 45-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "14f489a9a8f0122845779b40b7859336cad15c1b",
+  "prompts": {},
+  "sessions": {
+    "s_c28062538daa65": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f5593b4e3ffeSw05m7YKwl49PD",
+        "model": "unknown"
+      },
+      "human_author": "xiaxingyu1 <xiaxingyu1@xiaohongshu.com>"
+    }
+  }
+}
