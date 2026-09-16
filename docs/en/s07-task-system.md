@@ -1,6 +1,6 @@
 # s07: Task System
 
-`s01 > s02 > s03 > s04 > s05 > s06 | [ s07 ] s08 > s09 > s10 > s11 > s12`
+`s01 > s02 > s03 > s04 > s05 > s06 | [ s07 ] > s08 > s09 > s10 > s11 > s12`
 
 > *"Break big goals into small tasks, order them, persist to disk"* -- a file-based task graph with dependencies, laying the foundation for multi-agent collaboration.
 >
@@ -71,7 +71,7 @@ class TaskManager:
 ```python
 def _clear_dependency(self, completed_id):
     for f in self.dir.glob("task_*.json"):
-        task = json.loads(f.read_text())
+        task = json.loads(f.read_text(encoding="utf-8"))
         if completed_id in task.get("blockedBy", []):
             task["blockedBy"].remove(completed_id)
             self._save(task)

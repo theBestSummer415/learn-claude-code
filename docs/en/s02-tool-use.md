@@ -1,6 +1,6 @@
 # s02: Tool Use
 
-`s01 > [ s02 ] s03 > s04 > s05 > s06 | s07 > s08 > s09 > s10 > s11 > s12`
+`s01 > [ s02 ] > s03 > s04 > s05 > s06 | s07 > s08 > s09 > s10 > s11 > s12`
 
 > *"Adding a tool means adding one handler"* -- the loop stays the same; new tools register into the dispatch map.
 >
@@ -41,7 +41,7 @@ def safe_path(p: str) -> Path:
     return path
 
 def run_read(path: str, limit: int = None) -> str:
-    text = safe_path(path).read_text()
+    text = safe_path(path).read_text(encoding="utf-8")
     lines = text.splitlines()
     if limit and limit < len(lines):
         lines = lines[:limit]

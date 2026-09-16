@@ -1,6 +1,6 @@
 # s09: Agent Teams
 
-`s01 > s02 > s03 > s04 > s05 > s06 | s07 > s08 > [ s09 ] s10 > s11 > s12`
+`s01 > s02 > s03 > s04 > s05 > s06 | s07 > s08 > [ s09 ] > s10 > s11 > s12`
 
 > *"When the task is too big for one, delegate to teammates"* -- persistent teammates + async mailboxes.
 >
@@ -78,8 +78,8 @@ class MessageBus:
     def read_inbox(self, name):
         path = self.dir / f"{name}.jsonl"
         if not path.exists(): return "[]"
-        msgs = [json.loads(l) for l in path.read_text().strip().splitlines() if l]
-        path.write_text("")  # drain
+        msgs = [json.loads(l) for l in path.read_text(encoding="utf-8").strip().splitlines() if l]
+        path.write_text("", encoding="utf-8")  # drain
         return json.dumps(msgs, indent=2)
 ```
 

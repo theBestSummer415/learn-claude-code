@@ -1,6 +1,6 @@
 # s05: Skills
 
-`s01 > s02 > s03 > s04 > [ s05 ] s06 | s07 > s08 > s09 > s10 > s11 > s12`
+`s01 > s02 > s03 > s04 > [ s05 ] > s06 | s07 > s08 > s09 > s10 > s11 > s12`
 
 > *"Load knowledge when you need it, not upfront"* -- inject via tool_result, not the system prompt.
 >
@@ -52,7 +52,7 @@ class SkillLoader:
     def __init__(self, skills_dir: Path):
         self.skills = {}
         for f in sorted(skills_dir.rglob("SKILL.md")):
-            text = f.read_text()
+            text = f.read_text(encoding="utf-8")
             meta, body = self._parse_frontmatter(text)
             name = meta.get("name", f.parent.name)
             self.skills[name] = {"meta": meta, "body": body}

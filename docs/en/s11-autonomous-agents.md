@@ -1,6 +1,6 @@
 # s11: Autonomous Agents
 
-`s01 > s02 > s03 > s04 > s05 > s06 | s07 > s08 > s09 > s10 > [ s11 ] s12`
+`s01 > s02 > s03 > s04 > s05 > s06 | s07 > s08 > s09 > s10 > [ s11 ] > s12`
 
 > *"Teammates scan the board and claim tasks themselves"* -- no need for the lead to assign each one.
 >
@@ -98,7 +98,7 @@ def _idle_poll(self, name, messages):
 def scan_unclaimed_tasks() -> list:
     unclaimed = []
     for f in sorted(TASKS_DIR.glob("task_*.json")):
-        task = json.loads(f.read_text())
+        task = json.loads(f.read_text(encoding="utf-8"))
         if (task.get("status") == "pending"
                 and not task.get("owner")
                 and not task.get("blockedBy")):
