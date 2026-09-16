@@ -44,7 +44,10 @@ load_dotenv(override=True)
 
 WORKDIR = Path.cwd()
 SKILLS_DIR = WORKDIR / "skills"
-client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
+client = Anthropic(
+    api_key=os.environ["OPENAI_API_KEY"],
+    base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+)
 MODEL = os.environ["MODEL_ID"]
 
 

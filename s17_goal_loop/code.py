@@ -823,7 +823,9 @@ class AgentSession:
 
 def make_live_session(workdir: Path) -> AgentSession:
     try:
-        from anthropic import Anthropic
+        import sys as _sys, os as _os
+        _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+        from _openai_compat import Anthropic
         from dotenv import load_dotenv
     except ImportError as error:
         raise GoalError(
@@ -834,14 +836,11 @@ def make_live_session(workdir: Path) -> AgentSession:
     model = os.getenv("MODEL_ID")
     if not model:
         raise GoalError("MODEL_ID is required in the environment or .env")
-    evaluator_model = (
-        os.getenv("GOAL_EVALUATOR_MODEL_ID")
-        or os.getenv("ANTHROPIC_DEFAULT_HAIKU_MODEL")
-        or model
+    evaluator_model = os.getenv("GOAL_EVALUATOR_MODEL_ID") or model
+    client = Anthropic(
+        api_key=os.environ["OPENAI_API_KEY"],
+        base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
     )
-    if os.getenv("ANTHROPIC_BASE_URL"):
-        os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
-    client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
     evaluator = PromptGoalEvaluator(client=client, model=evaluator_model)
     block_cap = int(
         os.getenv(
